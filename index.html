@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | KIB Contact Center Management Portal</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body class="login-page">
+  <div class="login-shell">
+    <section class="login-brand">
+      <div>
+        <div class="login-mark">
+          <div class="login-mark-badge">K</div>
+          <div>
+            <div class="form-eyebrow">KIB Contact Center</div>
+            <h1>Management Control Portal</h1>
+            <p>Professional task governance for Head, Managers, Team Leaders, Quality, Workforce Management, and Back Office.</p>
+          </div>
+        </div>
+        <div class="feature-board">
+          <article class="feature-tile tile-violet"><div><h3>Assignment</h3><p>Controlled task creation, ownership, SLA, and instructions.</p></div></article>
+          <article class="feature-tile tile-blue"><div><h3>Execution</h3><p>Live tracking for my tasks, department tasks, and completion flow.</p></div></article>
+          <article class="feature-tile tile-cyan"><div><h3>Approvals</h3><p>Delay, delegation, handover, approvals, and audit history.</p></div></article>
+          <article class="feature-tile tile-green"><div><h3>Visibility</h3><p>Dashboards, escalations, reports, recurring controls, and governance.</p></div></article>
+        </div>
+      </div>
+      <div class="inline-note">Use a real user from the <strong>Users</strong> sheet. Passwords are validated against the password hash stored in the workbook.</div>
+    </section>
+    <section class="login-card">
+      <div class="form-eyebrow">Secure Access</div>
+      <h2>Sign in</h2>
+      <p>Enter your portal credentials to access the live management workspace.</p>
+      <div class="error-box" id="loginError"></div>
+      <form id="loginForm" class="login-form">
+        <div class="field-group">
+          <label for="email">Email</label>
+          <div class="input-shell"><input id="email" type="email" autocomplete="username" required /></div>
+        </div>
+        <div class="field-group">
+          <label for="password">Password</label>
+          <div class="input-shell"><input id="password" type="password" autocomplete="current-password" required /></div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+      <div class="inline-note">Before first login, set the correct <strong>Spreadsheet ID</strong> in Apps Script and add at least one active user in the <strong>Users</strong> tab.</div>
+    </section>
+  </div>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/auth.js"></script>
+  <script>
+    const session = Auth.getSession();
+    if (session?.user_id) location.href = './pages/dashboard.html';
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('loginError');
+      err.style.display = 'none';
+      try {
+        const res = await Api.login(document.getElementById('email').value, document.getElementById('password').value);
+        if (!res.success) throw new Error(res.error || 'Login failed');
+        Auth.saveSession(res.data);
+        location.href = './pages/dashboard.html';
+      } catch (error) {
+        err.textContent = error.message;
+        err.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
